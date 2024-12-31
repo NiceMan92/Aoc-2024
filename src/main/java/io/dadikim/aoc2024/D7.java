@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Fail.fail;
 
@@ -14,24 +15,26 @@ public class D7 {
 
     private Map<Long, List<Integer>> readInput(@NonNull Path filePath) throws IOException {
         Map<Long, List<Integer>> map = new HashMap<>();
-        List<String[]> strings = Files.lines(filePath)
-                .map(str -> str.split(": ")).toList();
-        for (String[] str : strings){
-            map.put(Long.valueOf(str[0]), Arrays.stream(str[1].split(" ")).map(Integer::valueOf).toList());
+        try(Stream<String> lines = Files.lines(filePath)) {
+            for (String[] str : lines.map(str -> str.split(": ")).toList()){
+                map.put(Long.valueOf(str[0]), Arrays.stream(str[1].split(" ")).map(Integer::valueOf).toList());
+            }
         }
+
         return map;
     }
 
     enum OPERATOR {
         PLUS,
-        MULTI
+        MULTI,
+        CONCATENATE
     }
 
 
     @Test
     void test1 (){
         List<List<OPERATOR>> combinations = new ArrayList<>();
-        OPERATOR [] arr = {OPERATOR.PLUS, OPERATOR.MULTI};
+        OPERATOR [] arr = {OPERATOR.PLUS, OPERATOR.MULTI, OPERATOR.CONCATENATE};
         generateCombinations(arr, 3, new ArrayList<>(), combinations);
         System.out.println(combinations);
     }
@@ -58,7 +61,7 @@ public class D7 {
                 Long key = es.getKey();
                 List<Integer> list = es.getValue();
                 List<List<OPERATOR>> combinations = new ArrayList<>(Double.valueOf(Math.pow(2, list.size() -1 )).intValue());
-                OPERATOR [] arr = {OPERATOR.PLUS, OPERATOR.MULTI};
+                OPERATOR [] arr = {OPERATOR.PLUS, OPERATOR.MULTI, OPERATOR.CONCATENATE};
                 generateCombinations(arr, list.size() -1, new ArrayList<>(), combinations);
                 //System.out.println(combinations);
 
@@ -79,7 +82,11 @@ public class D7 {
     private Long calculate(List<Integer> list, List<OPERATOR> opList) {
         Long total = (long) list.get(0);
         for (int i = 1; i < list.size() ; i++) {
-            total = opList.get(i-1) == OPERATOR.PLUS ? total + list.get(i) : total * list.get(i);
+           total =  switch (opList.get(i-1)) {
+               case PLUS -> total + list.get(i);
+               case MULTI -> total * list.get(i);
+               case CONCATENATE -> Long.valueOf(total + String.valueOf(list.get(i)));
+           };
         }
         return total;
     }
