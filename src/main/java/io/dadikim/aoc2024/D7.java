@@ -14,7 +14,7 @@ import static org.assertj.core.api.Fail.fail;
 public class D7 {
 
     private Map<Long, List<Integer>> readInput(@NonNull Path filePath) throws IOException {
-        Map<Long, List<Integer>> map = new HashMap<>();
+        Map<Long, List<Integer>> map = new IdentityHashMap<>();
         try(Stream<String> lines = Files.lines(filePath)) {
             for (String[] str : lines.map(str -> str.split(": ")).toList()){
                 map.put(Long.valueOf(str[0]), Arrays.stream(str[1].split(" ")).map(Integer::valueOf).toList());
