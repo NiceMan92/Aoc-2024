@@ -59,11 +59,14 @@ public class D8 {
             displayMatrix(map);
             Map<Character, List<D6.Position>> antennasPosition = findAntennasPosition(map);
             int count = 0;
+            Set<D6.Position> antennasAntidotes = new HashSet<>();
             for (var antennas : antennasPosition.entrySet()) {
                 List<List<D6.Position>> combinations = generateCombinations(antennas.getValue());
                 for (var combination : combinations){
                     D6.Position o1 = combination.get(0);
                     D6.Position o2 = combination.get(1);
+                    antennasAntidotes.add(o1);
+                    antennasAntidotes.add(o2);
                     var iDistance = o2.i() - o1.i();
                     var dashI1 = o1.i() - iDistance;
                     var dashI2 = o2.i() + iDistance;
@@ -72,39 +75,82 @@ public class D8 {
                     var dashJ2 = o2.j() + jDistance;
                     if(jDistance > 0 ){
                         if (dashI1 >= 0 && dashJ1 >= 0){
-                            if (map[dashI1][dashJ1] != '#'){
-                                count++;
+                            if(map[dashI1][dashJ1] == '.'){
                                 map[dashI1][dashJ1] = '#';
                             }
+                                dashI1 = dashI1 - iDistance;
+                                dashJ1 = dashJ1 - jDistance;
+                                while (dashI1 >= 0 && dashJ1 >= 0) {
+                                    if(map[dashI1][dashJ1] == '.'){
+                                        map[dashI1][dashJ1] = '#';
+                                    }
+                                    dashI1 = dashI1 - iDistance;
+                                    dashJ1 = dashJ1 - jDistance;
+                                }
                         }
                         if (dashI2 < map.length && dashJ2 < map.length ){
-                            if (map[dashI2][dashJ2] != '#'){
-                                count++;
+                            if (map[dashI2][dashJ2] == '.'){
                                 map[dashI2][dashJ2] = '#';
+                            }
+                            dashI2 = dashI2 + iDistance;
+                            dashJ2 = dashJ2 + jDistance;
+                            while (dashI2 < map.length && dashJ2 < map.length) {
+                                if (map[dashI2][dashJ2] == '.'){
+                                    map[dashI2][dashJ2] = '#';
+                                }
+                                dashI2 = dashI2 + iDistance;
+                                dashJ2 = dashJ2 + jDistance;
                             }
                         }
                     } else {
                         if (dashJ2 >= 0 && dashI2 < map.length){
-                            if (map[dashI2][dashJ2] != '#'){
-                                count++;
+                            if (map[dashI2][dashJ2] == '.'){
                                 map[dashI2][dashJ2] = '#';
+                            }
+                            dashI2 = dashI2 + iDistance;
+                            dashJ2 = dashJ2 + jDistance;
+                            while (dashJ2 >= 0 && dashI2 < map.length) {
+                                if (map[dashI2][dashJ2] == '.'){
+                                    map[dashI2][dashJ2] = '#';
+                                }
+                                dashI2 = dashI2 + iDistance;
+                                dashJ2 = dashJ2 + jDistance;
                             }
                         }
                         if (dashJ1 < map.length &&  dashI1 >= 0){
-                            if (map[dashI1][dashJ1] != '#'){
-                                count++;
+                            if (map[dashI1][dashJ1] == '.'){
                                 map[dashI1][dashJ1] = '#';
+                            }
+                            dashI1 = dashI1 - iDistance;
+                            dashJ1 = dashJ1 - jDistance;
+                            while (dashJ1 < map.length &&  dashI1 >= 0) {
+                                if (map[dashI1][dashJ1] == '.'){
+                                    map[dashI1][dashJ1] = '#';
+                                }
+                                dashI1 = dashI1 - iDistance;
+                                dashJ1 = dashJ1 - jDistance;
                             }
                         }
                     }
                 }
             }
 
-            System.out.println("count = " + count);
+            System.out.println("count = " + (countDash(map) + antennasAntidotes.size()));
             displayMatrix(map);
 
         } catch (IOException e) {
             fail("Something went wrong with D8-map.txt file %s", e.getMessage());
         }
+    }
+
+    private int countDash(char[][] map) {
+        int count = 0;
+        for (char[] chars : map) {
+            for (int j = 0; j < map.length; j++) {
+                if (chars[j] == '#')
+                    count++;
+            }
+        }
+        return count;
     }
 }
