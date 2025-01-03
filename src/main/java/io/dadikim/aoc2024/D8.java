@@ -54,7 +54,7 @@ public class D8 {
     @Test
     void test(){
         try {
-            System.out.println("Part1: ----------------------");
+            System.out.println("Part2: ----------------------");
             char[][] map = readInput(Path.of("/Users/abdelkrimhaddadi/training/Java/Aoc2024/src/main/resources/D8-map.txt"));
             displayMatrix(map);
             Map<Character, List<D6.Position>> antennasPosition = findAntennasPosition(map);
