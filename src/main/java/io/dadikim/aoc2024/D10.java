@@ -51,7 +51,7 @@ public class D10 {
         return objects;
     }
 
-    private void findNinePositionsStartingFromZero(Character [][] matrix, Position currentPosition, Set<Position> ninePositions) {
+    private void findNinePositionsStartingFromZero(Character [][] matrix, Position currentPosition, List<Position> ninePositions) {
         if(matrix[currentPosition.i][currentPosition.j] == '9') {
             ninePositions.add(currentPosition);
             return;
@@ -99,7 +99,7 @@ public class D10 {
     }
 
     private int mapWalk(Character [][] map) {
-        Set<Position> ninePositions = new HashSet<>();
+        List<Position> ninePositions = new ArrayList<>();
         List<Position> startPositions = findStartPosition(map);
         int sum = 0;
         for (var startPosition : startPositions) {
@@ -114,12 +114,12 @@ public class D10 {
     @Test
     void test(){
         try {
-            System.out.println("Part1: ----------------------");
+            System.out.println("Part2: ----------------------");
             Character[][] map = readInput(Path.of("/Users/abdelkrimhaddadi/training/Java/Aoc2024/src/main/resources/D10-map.txt"));
             displayMatrix(map);
             int sum = mapWalk(map);
             System.out.println("sum of the scores: " + sum);
-            Assertions.assertEquals(sum, 512 );
+            Assertions.assertEquals(sum, 1045 );
         } catch (IOException e) {
             fail("Something went wrong with D6-map.txt file %s", e.getMessage());
         }
